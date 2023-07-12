@@ -1,4 +1,6 @@
 #!/usr/bin/python3
-temp = a
-a = b
-b = temp
+a = 5
+b = 10
+a, b = b, a
+print(a)
+print(b)
