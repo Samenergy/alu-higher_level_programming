@@ -5,6 +5,5 @@ def print_list_integer(my_list=[]):
         if num not in seen_nums:
             print("{:d}".format(num))
             seen_nums.add(num)
-my_list = [1, 2, 3, 4, 5, 1, 2, 3]
+my_list = [1, 2, 3]
 print_list_integer(my_list)
-
