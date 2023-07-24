@@ -1,9 +1,7 @@
 #!/usr/bin/python3
-class square:
-    """
-    A class representing a square.
+"""Create an Empty Square """
 
-    Attributes:
-        side_length (float): The length of the sides of the square.
-    """
+
+class Square:
+    ''' creates an empty square'''
     pass
