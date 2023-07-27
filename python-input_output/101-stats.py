@@ -1,50 +1,39 @@
 #!/usr/bin/python3
-"""Reads from standard input and computes metrics
-"""
+"""a script that reads stdin line by line and computes metrics"""
+import sys
 
-
-def print_stats(size, status_codes):
-    """Print accumulated metrics
-    """
-    print("File size: {}".format(size))
-    for key in sorted(status_codes):
-        print("{}: {}".format(key, status_codes[key]))
-
-
-if __name__ == "__main__":
-    import sys
-
-    size = 0
-    status_codes = {}
-    valid_codes = ['200', '301', '400', '401', '403', '404', '405', '500']
-    count = 0
-
-    try:
-        for line in sys.stdin:
-            if count == 10:
-                print_stats(size, status_codes)
-                count = 1
-            else:
-                count += 1
-
-            line = line.split()
-
-            try:
-                size += int(line[-1])
-            except (IndexError, ValueError):
-                pass
-
-            try:
-                if line[-2] in valid_codes:
-                    if status_codes.get(line[-2], -1) == -1:
-                        status_codes[line[-2]] = 1
-                    else:
-                        status_codes[line[-2]] += 1
-            except IndexError:
-                pass
-
-        print_stats(size, status_codes)
-
-    except KeyboardInterrupt:
-        print_stats(size, status_codes)
-        raise
+accepted_codes = [200, 301, 400, 401, 403, 404, 405, 500]
+codes = {}
+number_of_lines = 0
+size = 0
+try:
+    for line in sys.stdin:
+        if number_of_lines < 10:
+            number_of_lines += 1
+        else:
+            print(f"File size: {size}")
+            for i in sorted(codes):
+                print(f"{i}: {codes[i]}")
+            number_of_lines = 1
+        line_list = line.split()
+        try:
+            size += int(line_list[-1])
+        except (TypeError, ValueError):
+            pass
+        try:
+            code = int(line_list[-2])
+            if code in accepted_codes:
+                if codes.get(str(code), -10) == -10:
+                    codes[str(code)] = 1
+                else:
+                    codes[str(code)] = codes[str(code)] + 1
+        except (IndexError, ValueError):
+            pass
+    print(f"File size: {size}")
+    for i in sorted(codes):
+        print(f"{i}: {codes[i]}")
+except KeyboardInterrupt:
+    print(f"File size: {size}")
+    for i in sorted(codes):
+        print(f"{i}: {codes[i]}")
+    raise
