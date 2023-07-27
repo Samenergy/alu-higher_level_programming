@@ -1,42 +1,40 @@
 #!/usr/bin/python3
-'''
-Reading data from stdout
-'''
+"""
+reads stdin line by line and computes metrics
+"""
 import sys
-import re
 
-
-def print_data(code_count, total_size):
-    '''
-    Prints data summary
-    '''
-    print("File size: {}".format(total_size))
-    for key, value in sorted(code_count.items()):
-        if value > 0:
-            print("{key}: {value}".format(key=key, value=value))
-
-
+file_size = 0
+status_tally = {"200": 0, "301": 0, "400": 0, "401": 0,
+                "403": 0, "404": 0, "405": 0, "500": 0}
 i = 0
-pattern = (r'(\d+\.\d+\.\d+\.\d+) - \[(.*?)\] "GET /projects/(\d+) '
-           r'HTTP/\d\.\d" (\d+) (\d+)')
-status_code_counts = {200: 0, 301: 0, 400: 0, 401: 0,
-                      403: 0, 404: 0, 405: 0, 500: 0}
-total_file_size = 0
 try:
     for line in sys.stdin:
-        i += 1
-        match = re.match(pattern, line)
-        if match:
-            ip_address = match.group(1)
-            date = match.group(2)
-            project_id = match.group(3)
-            status_code = match.group(4)
-            file_size = match.group(5)
+        tokens = line.split()
+        if len(tokens) >= 2:
+            a = i
+            if tokens[-2] in status_tally:
+                status_tally[tokens[-2]] += 1
+                i += 1
+            try:
+                file_size += int(tokens[-1])
+                if a == i:
+                    i += 1
+            except:
+                if a == i:
+                    continue
+        if i % 10 == 0:
+            print("File size: {:d}".format(file_size))
+            for key, value in sorted(status_tally.items()):
+                if value:
+                    print("{:s}: {:d}".format(key, value))
+    print("File size: {:d}".format(file_size))
+    for key, value in sorted(status_tally.items()):
+        if value:
+            print("{:s}: {:d}".format(key, value))
 
-        status_code_counts[int(status_code)] += 1
-        total_file_size += int(file_size)
-        if i == 10:
-            i = 0
-            print_data(status_code_counts, total_file_size)
 except KeyboardInterrupt:
-    print_data(status_code_counts, total_file_size)
+    print("File size: {:d}".format(file_size))
+    for key, value in sorted(status_tally.items()):
+        if value:
+            print("{:s}: {:d}".format(key, value))
